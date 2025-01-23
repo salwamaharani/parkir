@@ -31,6 +31,7 @@ class HomeController extends Controller
     }
     public function cetak_pdf($plat)
     {
+
         $parkirDitemukan = RiwayatParkir::where('nomor_plat', $plat)->whereNotNull('waktu_keluar')->first();
         $detailparkir = [];
 
