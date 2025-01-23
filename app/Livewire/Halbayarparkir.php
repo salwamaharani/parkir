@@ -57,6 +57,7 @@ class Halbayarparkir extends Component
             $detailparkir = RiwayatParkir::where('nomor_plat', $this->parkirDitemukan->nomor_plat)->whereNotNull('waktu_keluar')->first();
             $this->sudahBayar = true;
             $this->resetInput();
+            //untuk kirim ke halaman cetak
             if ($detailparkir) {
                 $this->informasibayarparkir = [
                     'noplat' => $detailparkir->nomor_plat,
