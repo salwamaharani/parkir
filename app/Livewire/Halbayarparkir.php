@@ -33,8 +33,8 @@ class Halbayarparkir extends Component
 
 
             // Hitung total biaya
-            $this->totalbiaya = ($this->lamajam < 1) 
-                ? $this->tarifperjam 
+            $this->totalbiaya = ($this->lamajam < 1)
+                ? $this->tarifperjam
                 : $this->lamajam * $this->tarifperjam;
         } else {
             $this->catatan = 'Parkir tidak ditemukan';
@@ -47,13 +47,14 @@ class Halbayarparkir extends Component
     public function bayar()
     {
         if ($this->parkirDitemukan) {
+
             $this->parkirDitemukan->update([
                 'waktu_keluar' => $this->waktukeluar, // Update waktu keluar
                 'durasi' => $this->lamajam,           // Update durasi parkir
                 'biaya' => $this->totalbiaya,         // Update total biaya
             ]);
 
-            // Tandai sudah bayar dan reset form
+            // // Tandai sudah bayar dan reset form
             $this->sudahBayar = true;
             $this->resetInput();
         }
@@ -65,14 +66,14 @@ class Halbayarparkir extends Component
     private function resetInput()
     {
         $this->reset([
-            'nomorPlat', 
-            'catatan', 
-            'noplat', 
-            'jeniskendaraanditemukan', 
-            'tarifperjam', 
-            'waktumasuk', 
-            'waktukeluar', 
-            'lamajam', 
+            'nomorPlat',
+            'catatan',
+            'noplat',
+            'jeniskendaraanditemukan',
+            'tarifperjam',
+            'waktumasuk',
+            'waktukeluar',
+            'lamajam',
             'totalbiaya'
         ]);
     }

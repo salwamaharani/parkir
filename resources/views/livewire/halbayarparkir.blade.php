@@ -69,7 +69,7 @@
                         </table>
 
                         <!-- Tombol Bayar -->
-                        <button class="btn btn-success" wire:click="bayar">Bayar</button>
+                        <a href="{{ url('cetak_pdf/'.$noplat) }}" target="_blank" class="btn btn-success" wire:click="bayar">Bayar dan Cetak</a>
                     @elseif($sudahBayar)
                         <div class="alert alert-success">
                             Pembayaran telah selesai. Terima kasih!
