@@ -14,6 +14,7 @@ class Halbayarparkir extends Component
     public $nomorPlat, $catatan, $parkirDitemukan;
     public $noplat, $jeniskendaraanditemukan, $tarifperjam, $waktumasuk, $waktukeluar, $lamajam, $totalbiaya;
     public $sudahBayar = false;
+    public $informasibayarparkir;
 
     /**
      * Cari data parkir berdasarkan nomor plat
@@ -33,8 +34,8 @@ class Halbayarparkir extends Component
 
 
             // Hitung total biaya
-            $this->totalbiaya = ($this->lamajam < 1) 
-                ? $this->tarifperjam 
+            $this->totalbiaya = ($this->lamajam < 1)
+                ? $this->tarifperjam
                 : $this->lamajam * $this->tarifperjam;
         } else {
             $this->catatan = 'Parkir tidak ditemukan';
@@ -47,15 +48,31 @@ class Halbayarparkir extends Component
     public function bayar()
     {
         if ($this->parkirDitemukan) {
+
             $this->parkirDitemukan->update([
                 'waktu_keluar' => $this->waktukeluar, // Update waktu keluar
                 'durasi' => $this->lamajam,           // Update durasi parkir
                 'biaya' => $this->totalbiaya,         // Update total biaya
             ]);
-
-            // Tandai sudah bayar dan reset form
+            $detailparkir = RiwayatParkir::where('nomor_plat', $this->parkirDitemukan->nomor_plat)->whereNotNull('waktu_keluar')->first();
             $this->sudahBayar = true;
             $this->resetInput();
+            //untuk kirim ke halaman cetak
+            if ($detailparkir) {
+                $this->informasibayarparkir = [
+                    'noplat' => $detailparkir->nomor_plat,
+                    'jeniskendaraanditemukan' => $detailparkir->jeniskendaraan->nama,
+                    'tarifperjam' => $detailparkir->jeniskendaraan->tarif,
+                    'waktumasuk' => $detailparkir->waktu_masuk,
+                    'waktukeluar' => Carbon::now()->format('Y-m-d H:i:s'),
+                    'lamajam' => Carbon::parse($detailparkir->waktu_masuk)->diffInHours(Carbon::parse(Carbon::now()->format('Y-m-d H:i:s'))),
+                    'totalbiaya' => $detailparkir->biaya,
+                    'durasi' => $detailparkir->durasi,
+                ];
+            }
+
+            // // Tandai sudah bayar dan reset form
+
         }
     }
 
@@ -65,14 +82,14 @@ class Halbayarparkir extends Component
     private function resetInput()
     {
         $this->reset([
-            'nomorPlat', 
-            'catatan', 
-            'noplat', 
-            'jeniskendaraanditemukan', 
-            'tarifperjam', 
-            'waktumasuk', 
-            'waktukeluar', 
-            'lamajam', 
+            'nomorPlat',
+            'catatan',
+            'noplat',
+            'jeniskendaraanditemukan',
+            'tarifperjam',
+            'waktumasuk',
+            'waktukeluar',
+            'lamajam',
             'totalbiaya'
         ]);
     }
