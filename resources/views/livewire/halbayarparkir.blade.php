@@ -3,9 +3,8 @@
         <div class="col-md-12">
             <div class="card" style="background-color: #f9f9f9; border-color: #ccc;">
                 <div class="card-header" style="background-color: #007BFF; color: white;">
-                    Dashboard
+                    Dashboard Pembayaran Parkir
                 </div>
-
                 <div class="card-body" style="background-color: #f8f9fa;">
                     <!-- Form Pencarian -->
                     @if(!$sudahBayar)
@@ -17,7 +16,7 @@
                                     wire:model="nomorPlat" 
                                     placeholder="Cari Nomor Kendaraan" 
                                 />
-                                <button class="btn btn-primary" type="button" wire:click="cariPlat">Cari</button>
+                                <button class="btn btn-primary" type="submit">Cari</button>
                             </div>
                         </form>
                         <hr />
@@ -39,7 +38,7 @@
                             <tr>
                                 <td>Jenis Kendaraan</td>
                                 <td>:</td>
-                                <td>{{ $jeniskendaraanditemukan }}</td>
+                                <td>{{ $jeniskendaraanditemukan ?? 'Tidak Diketahui' }}</td>
                             </tr>
                             <tr>
                                 <td>Tarif Per Jam</td>
@@ -59,7 +58,7 @@
                             <tr>
                                 <td>Lama Jam</td>
                                 <td>:</td>
-                                <td>{{ $lamajam }} Jam</td>
+                                <td>{{ $lamajam }} Jam</td> <!-- Menampilkan Jam Saja -->
                             </tr>
                             <tr>
                                 <td>Total Biaya</td>
@@ -68,8 +67,10 @@
                             </tr>
                         </table>
 
-                        <!-- Tombol Bayar -->
-                        <button class="btn btn-success" wire:click="bayar">Bayar</button>
+                        <!-- Tombol Bayar dan Cetak -->
+                        @if(!$sudahBayar)
+                            <a href="{{ url('cetak_pdf/'.$noplat) }}" target="_blank" class="btn btn-success" wire:click="bayar">Bayar dan Cetak</a>
+                        @endif
                     @elseif($sudahBayar)
                         <div class="alert alert-success">
                             Pembayaran telah selesai. Terima kasih!
@@ -93,20 +94,20 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($riwayatParkir as $rp)
+                             @forelse ($riwayatParkir as $rp)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $rp->nomor_plat }}</td>
-                                    <td>{{ $rp->jeniskendaraan->nama }}</td>
-                                    <td>Rp {{ number_format($rp->jeniskendaraan->tarif, 0, ',', '.') }}</td>
+                                    <td>{{ $rp->jeniskendaraan->nama ?? 'Tidak Diketahui' }}</td>
+                                    <td>Rp {{ number_format($rp->jeniskendaraan->tarif ?? 0, 0, ',', '.') }}</td>
                                     <td>{{ $rp->waktu_masuk }}</td>
                                     <td>{{ $rp->waktu_keluar }}</td>
-                                    <td>{{ $rp->durasi }}</td>
+                                    <td>{{ $rp->durasi }} Jam</td> <!-- Menampilkan Jam Saja -->
                                     <td>Rp {{ number_format($rp->biaya, 0, ',', '.') }}</td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="text-center">Tidak ada data</td>
+                                    <td colspan="8" class="text-center">Tidak ada riwayat parkir.</td>
                                 </tr>
                             @endforelse
                         </tbody>

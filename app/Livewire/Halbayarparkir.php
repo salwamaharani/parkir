@@ -1,89 +1,66 @@
 <?php
-
 namespace App\Livewire;
 
 use Livewire\Component;
-use App\Models\Parkir;
 use App\Models\RiwayatParkir;
 use Carbon\Carbon;
 
-
 class Halbayarparkir extends Component
 {
-    // Properti untuk data dan logika
     public $nomorPlat, $catatan, $parkirDitemukan;
-    public $noplat, $jeniskendaraanditemukan, $tarifperjam, $waktumasuk, $waktukeluar, $lamajam, $totalbiaya;
+    public $noplat, $jeniskendaraanditemukan, $tarifperjam, $waktumasuk, $waktukeluar, $lamajam, $lamamenit, $totalbiaya;
+    public $durasiKeterangan;
     public $sudahBayar = false;
 
     /**
      * Cari data parkir berdasarkan nomor plat
      */
-    public function cariPlat()
+    public function cetak_pdf($plat)
     {
-        $this->parkirDitemukan = RiwayatParkir::where('nomor_plat', $this->nomorPlat)->whereNull('waktu_keluar')->first();
-
-        if ($this->parkirDitemukan) {
-            $this->catatan = 'Parkir ditemukan';
-            $this->noplat = $this->parkirDitemukan->nomor_plat;
-            $this->jeniskendaraanditemukan = $this->parkirDitemukan->jeniskendaraan->nama;
-            $this->tarifperjam = $this->parkirDitemukan->jeniskendaraan->tarif;
-            $this->waktumasuk = $this->parkirDitemukan->waktu_masuk;
-            $this->waktukeluar = Carbon::now()->format('Y-m-d H:i:s');
-            $this->lamajam = Carbon::parse($this->waktumasuk)->diffInHours(Carbon::parse($this->waktukeluar));
-
-
-            // Hitung total biaya
-            $this->totalbiaya = ($this->lamajam < 1) 
-                ? $this->tarifperjam 
-                : $this->lamajam * $this->tarifperjam;
-        } else {
-            $this->catatan = 'Parkir tidak ditemukan';
+        $parkirDitemukan = RiwayatParkir::where('nomor_plat', $plat)
+            ->whereNotNull('waktu_keluar')
+            ->first();
+    
+        if (!$parkirDitemukan) {
+            abort(404, 'Data parkir tidak ditemukan');
         }
-    }
-
-    /**
-     * Proses pembayaran parkir
-     */
-    public function bayar()
-    {
-        if ($this->parkirDitemukan) {
-            $this->parkirDitemukan->update([
-                'waktu_keluar' => $this->waktukeluar, // Update waktu keluar
-                'durasi' => $this->lamajam,           // Update durasi parkir
-                'biaya' => $this->totalbiaya,         // Update total biaya
-            ]);
-
-            // Tandai sudah bayar dan reset form
-            $this->sudahBayar = true;
-            $this->resetInput();
-        }
-    }
-
-    /**
-     * Reset input form
-     */
-    private function resetInput()
-    {
-        $this->reset([
-            'nomorPlat', 
-            'catatan', 
-            'noplat', 
-            'jeniskendaraanditemukan', 
-            'tarifperjam', 
-            'waktumasuk', 
-            'waktukeluar', 
-            'lamajam', 
-            'totalbiaya'
-        ]);
-    }
-
-    /**
-     * Render tampilan livewire
-     */
-    public function render()
-    {
-        return view('livewire.halbayarparkir', [
-            'riwayatParkir' => RiwayatParkir::whereNotNull('waktu_keluar')->get(), // Ambil semua data riwayat parkir
-        ]);
+    
+        // Menghitung lama parkir
+        $waktuMasuk = Carbon::parse($parkirDitemukan->waktu_masuk);
+        $waktuKeluar = Carbon::now(); // Waktu keluar adalah waktu sekarang
+    
+        // Menghitung durasi dalam menit
+        $durasiMenit = $waktuMasuk->diffInMinutes($waktuKeluar);
+        
+        // Menghitung hari, jam, dan menit
+        $durasiHari = floor($durasiMenit / (24 * 60)); // Menghitung hari
+        $sisaMenit = $durasiMenit % (24 * 60); // Sisa menit setelah mengurangi hari
+        $durasiJam = floor($sisaMenit / 60); // Menghitung jam
+        $durasiMenit = $sisaMenit % 60; // Sisa menit
+    
+        // Tarif per jam
+        $tarifPerJam = $parkirDitemukan->jeniskendaraan->tarif;
+    
+        // Jika durasi parkir kurang dari 1 jam, biaya tetap sesuai tarif per jam
+        $totalBiaya = ($durasiHari > 0 || $durasiJam > 0 ? ($durasiHari * 24 + $durasiJam) * $tarifPerJam : $tarifPerJam);
+    
+        // Menyiapkan data untuk view PDF
+        $detailParkir = [
+            'noplat' => $parkirDitemukan->nomor_plat,
+            'jeniskendaraanditemukan' => $parkirDitemukan->jeniskendaraan->nama,
+            'tarifperjam' => $tarifPerJam,
+            'waktumasuk' => $waktuMasuk->format('Y-m-d H:i:s'),
+            'waktukeluar' => $waktuKeluar->format('Y-m-d H:i:s'),
+            'durasi' => sprintf("%d Hari %d Jam %d Menit", $durasiHari, $durasiJam, $durasiMenit),  // Ganti lamajam dengan durasi
+            'totalbiaya' => $totalBiaya,
+            'tempatparkir' => 'Parkir Pusat Sukses',
+            'deskripsi' => 'Jl. Raya Sukamaju No.45, Bogor, Jawa Barat. (0251) 1234567'
+        ];
+    
+        // Menentukan ukuran kertas A5 (148mm x 210mm)
+        $pdf = PDF::loadView('cetak', ['detailparkir' => $detailParkir])
+            ->setPaper('A5', 'portrait'); // Ukuran kertas A5, orientasi portrait
+    
+        return $pdf->stream('invoice_parkir_' . $plat . '.pdf');
     }
 }

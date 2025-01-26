@@ -19,23 +19,48 @@
     <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Custom Styles for Active Navbar -->
+    <!-- Custom Styles for Navbar -->
     <style>
-        /* Style for the active navbar link with a small blue border around text */
+        /* Style for the active navbar link with a small white border around text */
         .navbar-nav .nav-link.active {
-            border-bottom: 2px solid #007bff; /* Blue border at the bottom of the active link */
-            color: #007bff !important; /* Change text color to blue */
+            border-bottom: 2px solid #ffffff; /* White border at the bottom of the active link */
+            color: #ffffff !important; /* Change text color to white */
         }
 
-        /* Optional: Change navbar background color */
+        /* Change navbar background color to Royal Blue */
         .navbar {
-            background-color: #f8f9fa; /* Light background for the navbar */
+            background-color: #0056b3; /* Royal Blue */
+            color: white; /* Default text color */
+        }
+
+        /* Style for all navbar links */
+        .navbar-nav .nav-link {
+            color: white !important; /* Ensure all links are white */
+        }
+
+        /* Optional: Style for dropdown menu */
+        .dropdown-menu {
+            background-color: #0056b3; /* Match the navbar background */
+        }
+
+        .dropdown-item {
+            color: white !important; /* White text for dropdown items */
+        }
+
+        .dropdown-item:hover {
+            background-color: #003366; /* Darker blue on hover */
+        }
+
+        /* Style specifically for E-Parkir text */
+        .navbar-brand {
+            color: white !important;  /* White color */
+            font-weight: bold;        /* Bold text */
         }
     </style>
 </head>
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+        <nav class="navbar navbar-expand-md navbar-light shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
                     {{ config('app.name', 'Laravel') }}

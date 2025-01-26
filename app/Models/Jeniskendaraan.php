@@ -4,7 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Jeniskendaraan extends Model
+class JenisKendaraan extends Model
 {
-    protected $fillable = ['nama', 'tarif'];
+    // Jika diperlukan, definisikan relasi balik
+    public function riwayatParkir()
+    {
+        return $this->hasMany(RiwayatParkir::class, 'jeniskendaraan_id');
+    }
 }
