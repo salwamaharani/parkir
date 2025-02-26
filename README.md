@@ -1,13 +1,13 @@
 # Panduan Penggunaan Aplikasi E-Parkir
 
-## 1. Akses Website
+### 1. Akses Website
 - Buka browser dan kunjungi website E-Parkir 
 
-## 2. Login Ke Sistem
+### 2. Login Ke Sistem
 - Masukkan kredensial yang sesuai untuk login.
 - Admin memiliki beberapa akses ke fitur sistem seperti mencatat jenis kendaraan, nomor plat, waktu masuk dan keluar, menghitung tarif otomatis, mencatat pembayaran, serta mencetak struk.
 
-## 3. Fitur untuk admin
+### 3. Fitur untuk admin
  #### A. Pencatatan Parkir
 Mencatat kendaraan masuk, dengan data:
 - Jenis Kendaraan (Mobil, Motor, dll.)
@@ -35,7 +35,7 @@ Mencatat kendaraan keluar, dengan data:
 #### H. Manajemen Pengguna
 - Menambah, mengedit, dan menghapus akun admin lain jika diperlukan.
 
-4.Logout jika sudah selesai menggunakan aplikasi, admin dapat logout untuk mengamankan akun.
+### 4.Logout jika sudah selesai menggunakan aplikasi, admin dapat logout untuk mengamankan akun.
 
 ### **Nama database E-Parkir:**
 - **db_parkir**
