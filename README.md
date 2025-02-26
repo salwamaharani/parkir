@@ -1,6 +1,6 @@
 # Panduan Penggunaan Aplikasi E-Parkir
 
-1.Akses Website
+*1.Akses Website
 -Buka browser dan kunjungi website E-Parkir 
 
 2.Login Ke Sistem
